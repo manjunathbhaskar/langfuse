@@ -255,7 +255,7 @@ export async function createManualToolApprovalRunInput(params: {
                 toolError,
               ),
             ]
-          : []),
+          : [createToolApprovalGuidanceMessage(approvalRequest)]),
       ],
       forwardedProps: {},
     },
@@ -272,12 +272,26 @@ function createToolRejectionGuidanceMessage(
 ): AgUiMessage {
   return {
     id: `${approvalRequest.toolCallId}-approval-rejection-guidance`,
-    role: "developer",
+    role: "user",
     content: [
       `The user declined the proposed tool call ${approvalRequest.toolName}.`,
       "The action was not completed.",
       "Do not retry this tool call or attempt an equivalent action unless the user explicitly requests it.",
       "Briefly acknowledge that the action was not completed and ask the user how they would like to continue.",
+    ].join("\n"),
+  };
+}
+
+function createToolApprovalGuidanceMessage(
+  approvalRequest: InAppAgentToolApprovalRequest,
+): AgUiMessage {
+  return {
+    id: `${approvalRequest.toolCallId}-approval-guidance`,
+    role: "user",
+    content: [
+      `The user approved the proposed tool call ${approvalRequest.toolName}.`,
+      "The action was completed successfully.",
+      "Do not repeat this tool call unless the user explicitly requests it.",
     ].join("\n"),
   };
 }
@@ -317,6 +331,7 @@ export function createManualToolCallAssistantMessage(
   return {
     id: createManualToolCallParentMessageId(approvalRequest),
     role: "assistant",
+    content: "",
     toolCalls: [
       {
         id: approvalRequest.toolCallId,
@@ -339,7 +354,7 @@ function createToolExecutionErrorGuidanceMessage(
 
   return {
     id: `${approvalRequest.toolCallId}-approval-tool-error-guidance`,
-    role: "developer",
+    role: "user",
     content: [
       `The approved tool call ${approvalRequest.toolName} failed during execution.`,
       `Rejected arguments: ${args}`,
