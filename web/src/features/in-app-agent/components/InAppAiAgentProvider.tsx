@@ -1718,7 +1718,6 @@ function InAppAiAgentProviderInner({
       capture("in_app_agent:tool_approval_decided", {
         isApproved: approved,
         toolName: approval.approvalRequest.toolName,
-        executionMode: backgroundExecutionEnabled ? "background" : "foreground",
       });
 
       if (backgroundExecutionEnabled) {
