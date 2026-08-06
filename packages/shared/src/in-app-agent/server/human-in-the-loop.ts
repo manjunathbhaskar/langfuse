@@ -233,9 +233,12 @@ export async function createManualToolApprovalRunInput(params: {
   const toolResultContent = serializeToolResultContent(toolResult);
   const assistantMessage =
     createManualToolCallAssistantMessage(approvalRequest);
+  // A successful tool call needs no guidance: the assistant tool call plus its
+  // tool result already carry the outcome. Only the error path needs to tell
+  // the model how to proceed.
   const guidanceMessage = toolError
     ? createToolExecutionErrorGuidanceMessage(approvalRequest, toolError)
-    : createToolApprovalGuidanceMessage(approvalRequest);
+    : undefined;
   const toolMessage: AgUiMessage = {
     id: createManualToolResultMessageId(approvalRequest),
     role: "tool",
@@ -256,12 +259,12 @@ export async function createManualToolApprovalRunInput(params: {
         ...params.input.messages,
         assistantMessage,
         toolMessage,
-        guidanceMessage,
+        ...(guidanceMessage ? [guidanceMessage] : []),
       ],
       forwardedProps: {},
     },
     syntheticEvents,
-    developerGuidance: guidanceMessage.content,
+    developerGuidance: guidanceMessage?.content,
     toolCallApproval: {
       toolCallId: approvalRequest.toolCallId,
       status: "approved",
@@ -280,20 +283,6 @@ function createToolRejectionGuidanceMessage(
       "The action was not completed.",
       "Do not retry this tool call or attempt an equivalent action unless the user explicitly requests it.",
       "Briefly acknowledge that the action was not completed and ask the user how they would like to continue.",
-    ].join("\n"),
-  };
-}
-
-function createToolApprovalGuidanceMessage(
-  approvalRequest: InAppAgentToolApprovalRequest,
-): DeveloperGuidanceMessage {
-  return {
-    id: `${approvalRequest.toolCallId}-approval-guidance`,
-    role: "developer",
-    content: [
-      `The user approved the proposed tool call ${approvalRequest.toolName}.`,
-      "The action was completed successfully.",
-      "Do not repeat this tool call unless the user explicitly requests it.",
     ].join("\n"),
   };
 }
