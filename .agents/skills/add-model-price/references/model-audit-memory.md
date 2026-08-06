@@ -91,10 +91,13 @@ All prices listed as `$X / MTok` (per million tokens). Per-token JSON values: di
    August 31, 2026. Standard pricing ($3/$15/MTok, cache $3.75/$6/$0.30) takes effect
    September 1, 2026. The pricing file must be updated before or on that date.
 
-2. **claude-opus-4-1-20250805 retirement** — Deprecated, retiring August 5, 2026 (i.e. the
-   day after this audit). Still listed on the official pricing page as of this run. File
-   entry retained for backward pricing compatibility; no action required now, but check
-   whether the model is fully removed from the official page in the next audit.
+2. **claude-opus-4-1-20250805 retirement (resolved 2026-08-06)** — Confirmed fully retired
+   on schedule: the official pricing page row label changed from "Claude Opus 4.1
+   (deprecating August 5, 2026)" to "Claude Opus 4.1 (retired, except on Bedrock and
+   Google Cloud)" between the August 4 and August 6 2026 audits. Prices are unchanged
+   ($15/$75 MTok input/output, cache write 5m $18.75, 1h $30, read $1.50). No file change
+   needed — the pricing file has no retirement-status field, only prices, and those still
+   match. No further action needed unless the model is removed from the page entirely.
 
 3. **AWS Bedrock "Claude 3.5 Sonnet (Public Extended Access)" pricing** — Confirmed real
    this run (see the dedicated row above and provider-sources-and-price-keys.md), but not
